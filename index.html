@@ -302,7 +302,7 @@ function renderProfile(){
  const pct=Math.min(100,Math.round(xp/need*100));
  const xpLabel=panel.querySelector('#ns-xp-label'),xpFill=panel.querySelector('#ns-xp-fill'),unlock=panel.querySelector('#ns-map-unlocks');
  if(xpLabel)xpLabel.textContent=xp+' / '+need+' XP';if(xpFill)xpFill.style.width=pct+'%';
- if(unlock){const next=[['Frostfall Kingdom',16],['Infernal Dominion',31],['Verdant Realm',51],['Celestial Empire',76]].find(x=>level<x[1]);unlock.textContent=next?'Next kingdom unlock: '+next[0]+' at level '+next[1]:'All five kingdoms unlocked · Maximum level reached';}
+ if(unlock){const next=[['Frozen Kingdom',16],['Golden Kingdom',31],['Volcanic Kingdom',51],['Mystic Islands',76]].find(x=>level<x[1]);unlock.textContent=next?'Next kingdom unlock: '+next[0]+' at level '+next[1]:'All five kingdoms unlocked · Maximum level reached';}
  panel.querySelector('#ns-profile-name').textContent=name;
  panel.querySelector('#ns-profile-email').textContent=player.email||'';
  panel.querySelector('#ns-profile-avatar').textContent=name.slice(0,1).toUpperCase();
