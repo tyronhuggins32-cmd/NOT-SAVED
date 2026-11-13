@@ -244,5 +244,121 @@ body{position:fixed;inset:0;width:100%;height:100dvh;min-height:0;padding:env(sa
 })();
 </script>
 <script src="./world-hub.js?v=3"></script>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+
+const configured = SUPABASE_URL.startsWith('https://') && !SUPABASE_URL.includes('YOUR_') && SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.includes('YOUR_');
+const supabase = configured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const authForm = document.getElementById('authForm');
+const authModal = document.getElementById('authModal');
+const authMessage = document.getElementById('formMessage');
+const usernameInput = authForm.querySelector('[name="username"]');
+let authMode = 'signup';
+let player = null;
+let playerProfile = null;
+let gameSave = {version:1,characters:[],cards:[],inventory:[],unlockedKingdoms:[],completedMissions:[],currency:{gold:0,gems:0},world:{},settings:{}};
+let saveQueue = Promise.resolve();
+let debounceHandle = null;
+
+function defaultSave(){return {version:1,characters:[],cards:[],inventory:[],unlockedKingdoms:[],completedMissions:[],currency:{gold:0,gems:0},world:{},settings:{}};}
+function showAuthMessage(message,good=false){authMessage.textContent=message;authMessage.style.color=good?'#80edc5':'#ff9ab7';}
+function setSaveStatus(message){const el=document.getElementById('ns-save-status');if(el)el.textContent=message;}
+function clone(value){return JSON.parse(JSON.stringify(value));}
+function scheduleSave(){clearTimeout(debounceHandle);setSaveStatus('Unsaved changes');debounceHandle=setTimeout(()=>window.NOT_SAVED_SAVE.saveNow().catch(e=>{setSaveStatus('Save failed');console.error(e);}),650);}
+
+function addProfilePanel(){
+ const world=document.getElementById('ns-world');
+ if(!world || document.getElementById('ns-profile-control'))return;
+ const top=world.querySelector('.top');if(!top)return;
+ const controls=top.querySelector('div:last-child');
+ const button=document.createElement('button');button.id='ns-profile-control';button.className='pill';button.textContent='♙ PROFILE';button.style.marginLeft='6px';
+ controls.appendChild(button);
+ const panel=document.createElement('section');panel.id='ns-profile-panel';
+ panel.style.cssText='display:none;position:absolute;z-index:12;right:14px;top:68px;width:min(330px,calc(100vw - 28px));padding:18px;border-radius:18px;background:linear-gradient(145deg,#152f4d,#07182d);border:1px solid #9ddcff66;box-shadow:0 20px 60px #001b;color:white;font-family:system-ui,sans-serif';
+ panel.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><b style="letter-spacing:.12em">PLAYER PROFILE</b><button id="ns-profile-close" style="border:0;border-radius:50%;padding:5px 10px;background:#ffffff20;color:white">×</button></div><div style="display:flex;gap:12px;align-items:center;margin:18px 0"><div id="ns-profile-avatar" style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#f04b9f,#8064ff);display:grid;place-items:center;font-size:23px;font-weight:900">P</div><div><strong id="ns-profile-name">Player</strong><div id="ns-profile-email" style="font-size:11px;color:#b8d9f2;margin-top:4px"></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px"><label>DISPLAY NAME<input id="ns-edit-name" maxlength="24" style="display:block;width:100%;margin-top:6px;padding:9px;border-radius:8px;background:#071326;color:white;border:1px solid #ffffff35"></label><label>LEVEL<input id="ns-edit-level" type="number" min="1" max="9999" style="display:block;width:100%;margin-top:6px;padding:9px;border-radius:8px;background:#071326;color:white;border:1px solid #ffffff35"></label><label style="grid-column:1/-1">RANK<input id="ns-edit-rank" maxlength="32" style="display:block;width:100%;margin-top:6px;padding:9px;border-radius:8px;background:#071326;color:white;border:1px solid #ffffff35"></label></div><div style="font-size:10px;color:#a9d6ef;margin:8px 0">PLAYER ID <span id="ns-profile-id"></span></div><div id="ns-save-status" style="font-size:11px;color:#8fe9c3;margin:10px 0">Cloud save ready</div><button id="ns-profile-save" style="width:100%;padding:12px;border:0;border-radius:10px;background:linear-gradient(90deg,#f04b9f,#8064ff);color:white;font-weight:900">SAVE PROFILE</button><button id="ns-profile-logout" style="width:100%;padding:10px;margin-top:8px;border:1px solid #ffffff30;border-radius:10px;background:#ffffff10;color:white">LOG OUT</button><div style="font-size:10px;color:#8ea9c0;line-height:1.5;margin-top:10px">Progress is linked to this account and can be restored after logging in on another device.</div>';
+ world.appendChild(panel);
+ const open=()=>{panel.style.display=panel.style.display==='block'?'none':'block';};
+ button.addEventListener('click',open);
+ panel.querySelector('#ns-profile-close').addEventListener('click',()=>panel.style.display='none');
+ panel.querySelector('#ns-profile-save').addEventListener('click',async()=>{
+  playerProfile={...playerProfile,username:panel.querySelector('#ns-edit-name').value.trim()||'Adventurer',level:Math.max(1,Number(panel.querySelector('#ns-edit-level').value)||1),rank:panel.querySelector('#ns-edit-rank').value.trim()||'Unranked',updated_at:new Date().toISOString()};
+  try{await supabase.from('player_profiles').upsert({id:player.id,...playerProfile});renderProfile();setSaveStatus('Profile saved to cloud');}catch(e){setSaveStatus('Save failed: '+e.message);}
+ });
+ panel.querySelector('#ns-profile-logout').addEventListener('click',async()=>{await supabase.auth.signOut();location.reload();});
+ renderProfile();
+}
+function renderProfile(){
+ const panel=document.getElementById('ns-profile-panel');if(!panel||!player)return;
+ const name=playerProfile?.username||player.user_metadata?.username||player.email?.split('@')[0]||'Adventurer';
+ panel.querySelector('#ns-profile-name').textContent=name;
+ panel.querySelector('#ns-profile-email').textContent=player.email||'';
+ panel.querySelector('#ns-profile-avatar').textContent=name.slice(0,1).toUpperCase();
+ panel.querySelector('#ns-profile-id').textContent=player.id;
+ panel.querySelector('#ns-edit-name').value=name;
+ panel.querySelector('#ns-edit-level').value=playerProfile?.level||1;
+ panel.querySelector('#ns-edit-rank').value=playerProfile?.rank||'Unranked';
+ const playerTag=document.getElementById('ns-player');if(playerTag)playerTag.textContent='PLAYER · '+name.toUpperCase();
+}
+async function persistSave(){
+ if(!player||!supabase)throw new Error('Player is not signed in to cloud saves.');
+ const payload={player_id:player.id,save_data:gameSave,updated_at:new Date().toISOString()};
+ const {error}=await supabase.from('player_game_saves').upsert(payload,{onConflict:'player_id'});
+ if(error)throw error;
+ setSaveStatus('Cloud saved · '+new Date(payload.updated_at).toLocaleTimeString());
+ return true;
+}
+window.NOT_SAVED_SAVE={
+ get:()=>clone(gameSave),
+ set:async(next)=>{gameSave={...defaultSave(),...clone(next)};return persistSave();},
+ update:async(patch)=>{gameSave={...gameSave,...clone(patch)};return persistSave();},
+ queue:(patch)=>{gameSave={...gameSave,...clone(patch)};scheduleSave();},
+ saveNow:async()=>{clearTimeout(debounceHandle);saveQueue=saveQueue.then(persistSave);return saveQueue;}
+};
+async function activatePlayer(user){
+ player=user;
+ const [{data:profile,error:profileError},{data:saved,error:saveError}]=await Promise.all([
+  supabase.from('player_profiles').select('*').eq('id',user.id).maybeSingle(),
+  supabase.from('player_game_saves').select('save_data,updated_at').eq('player_id',user.id).maybeSingle()
+ ]);
+ if(profileError)throw profileError;if(saveError)throw saveError;
+ if(profile){playerProfile=profile;}
+ else{playerProfile={username:user.user_metadata?.username||user.email?.split('@')[0]||'Adventurer',level:1,rank:'Unranked'};const {error}=await supabase.from('player_profiles').upsert({id:user.id,...playerProfile});if(error)throw error;}
+ gameSave=saved?.save_data?{...defaultSave(),...saved.save_data}:defaultSave();
+ if(!saved){await persistSave();}
+ if(typeof window.NSStartWorld==='function')window.NSStartWorld(playerProfile.username);
+ const waitForWorld=()=>{addProfilePanel();if(!document.getElementById('ns-profile-panel'))setTimeout(waitForWorld,250);};
+ waitForWorld();
+}
+document.addEventListener('click',event=>{
+ if(event.target.closest('#loginBtn')||event.target.closest('#footerLogin')){authMode='login';usernameInput.required=false;usernameInput.closest('.field').hidden=true;}
+ if(event.target.closest('#signupBtn')){authMode='signup';usernameInput.required=true;usernameInput.closest('.field').hidden=false;}
+},true);
+document.addEventListener('submit',async event=>{
+ if(event.target!==authForm)return;
+ event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();
+ if(!supabase){showAuthMessage('Cloud account setup is not finished. Add your Supabase Project URL and anon/public key in config.js, then run supabase-schema.sql in Supabase.');return;}
+ const formData=new FormData(authForm),email=String(formData.get('email')||'').trim(),password=String(formData.get('password')||''),username=String(formData.get('username')||'').trim()||email.split('@')[0]||'Adventurer';
+ const submit=document.getElementById('submitBtn');submit.disabled=true;submit.textContent='CONNECTING…';showAuthMessage('Connecting securely…');
+ try{
+  if(authMode==='signup'){
+   const {data,error}=await supabase.auth.signUp({email,password,options:{data:{username}}});if(error)throw error;
+   if(!data.session){showAuthMessage('Account created. Check your email to confirm, then log in.',true);submit.textContent='CHECK YOUR EMAIL';return;}
+   await activatePlayer(data.user);
+  }else{
+   const {data,error}=await supabase.auth.signInWithPassword({email,password});if(error)throw error;await activatePlayer(data.user);
+  }
+  authModal.classList.remove('open');document.body.style.overflow='';
+ }catch(error){showAuthMessage(error.message||'Unable to complete account request.');}
+ finally{submit.disabled=false;if(submit.textContent==='CONNECTING…')submit.textContent=authMode==='login'?'LOG IN':'CREATE ACCOUNT';}
+},true);
+if(supabase){
+ const {data:{session}}=await supabase.auth.getSession();
+ if(session){try{await activatePlayer(session.user);}catch(e){console.error(e);const status=document.querySelector('#ns-world .status');if(status)status.textContent='SAVE SETUP ERROR';}}
+ supabase.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'){player=null;playerProfile=null;gameSave=defaultSave();} });
+}
+</script>
+
 </body>
 </html>
