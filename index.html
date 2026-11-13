@@ -343,7 +343,7 @@ window.NOT_SAVED_PROFILE={
   const progression=gameSave.world.progression||{xp:0,totalXp:0};
   progression.xp=Math.max(0,Number(progression.xp)||0)+gain;progression.totalXp=Math.max(0,Number(progression.totalXp)||0)+gain;
   let level=Math.max(1,Number(playerProfile.level)||1);
-  while(level<100&&progression.xp>=this.xpForNextLevel(level)){progression.xp-=this.xpForNextLevel(level);level++;}
+  while(level<100&&progression.xp>=window.NOT_SAVED_PROFILE.xpForNextLevel(level)){progression.xp-=window.NOT_SAVED_PROFILE.xpForNextLevel(level);level++;}
   gameSave.world.progression=progression;
   if(level!==playerProfile.level)await this.update({level});
   await window.NOT_SAVED_SAVE.saveNow();renderProfile();
