@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#08091b">
+<title>NOT SAVED — Enter the Unknown</title>
+<style>
+:root{--ink:#090a20;--panel:#11132d;--lav:#c8c3ff;--pink:#ff4fa8;--violet:#8c63ff;--cyan:#5fe1f3}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--ink);color:#fff}
+body{min-height:100svh;overflow-x:hidden;display:grid;place-items:center;padding:26px 16px;background:radial-gradient(ellipse at 15% 20%,#30206e 0,transparent 38%),radial-gradient(ellipse at 88% 82%,#51154e 0,transparent 36%),linear-gradient(145deg,#09091d,#171039 52%,#08091b)}
+#world{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.aurora{position:fixed;inset:-30%;z-index:0;pointer-events:none;background:conic-gradient(from 120deg at 50% 50%,transparent 0 22%,#5a2c9c12 30%,#e13b9b18 40%,transparent 49% 65%,#3974d51c 78%,transparent 89%);filter:blur(55px);animation:aurora 24s linear infinite}
+@keyframes aurora{to{transform:rotate(360deg) scale(1.08)}}
+.shell{position:relative;z-index:1;width:min(100%,440px);padding:28px clamp(23px,6vw,38px) 25px;border:1px solid #c3b6ff2b;border-radius:32px;background:linear-gradient(155deg,#171638f2,#0c1029f5 72%);box-shadow:0 28px 100px #0009,0 0 60px #8354ff20,inset 0 1px #fff2;overflow:hidden;isolation:isolate}
+.shell:before{content:"";position:absolute;z-index:-1;top:0;left:12%;right:12%;height:2px;background:linear-gradient(90deg,transparent,var(--pink),var(--cyan),transparent);box-shadow:0 0 18px #cb63ff}
+.topline{display:flex;align-items:center;justify-content:space-between;color:#c2c0ee;font-size:10px;font-weight:800;letter-spacing:.24em}
+.brand-mark{display:flex;gap:9px;align-items:center}
+.brand-icon{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(140deg,var(--pink),var(--violet));font-size:13px;color:#fff;box-shadow:0 0 16px #a14dff70}
+.status{display:flex;align-items:center;gap:7px;color:#91a2bf;letter-spacing:.13em;font-size:9px}
+.status i{width:6px;height:6px;border-radius:50%;background:#61edbd;box-shadow:0 0 12px #61edbd}
+.hero{text-align:center;padding:26px 0 16px}
+.scene{height:210px;position:relative;display:grid;place-items:center;margin:0 auto 13px;perspective:600px}
+.ring{position:absolute;width:206px;height:206px;border:1px solid #b39bff36;border-radius:50%;box-shadow:0 0 40px #854fff22,inset 0 0 30px #854fff18;animation:ringPulse 5s ease-in-out infinite}
+.ring:before,.ring:after{content:"";position:absolute;inset:15px;border:1px solid #fa5bb747;border-radius:50%;transform:rotateX(66deg) rotate(-22deg)}
+.ring:after{inset:34px;border-color:#64dff54d;transform:rotateX(66deg) rotate(34deg)}
+@keyframes ringPulse{50%{transform:scale(1.07) rotate(12deg);opacity:.65}}
+.portal{width:134px;height:150px;display:grid;place-items:center;position:relative;transform:rotate(-7deg);border-radius:46% 46% 35% 35%;background:radial-gradient(ellipse at 50% 25%,#9a79ff 0,#51449a 32%,#1b2048 68%);border:1px solid #e0d4ff66;box-shadow:0 0 25px #9a60ff70,0 20px 40px #0008,inset 0 0 24px #d4b6ff55;animation:float 4s ease-in-out infinite}
+.portal:before{content:"";position:absolute;inset:9px;border-radius:inherit;border:1px solid #b3a2ff70;box-shadow:inset 0 0 24px #d58fff48}
+.portal-core{font-size:58px;filter:drop-shadow(0 6px 12px #1118);transform:rotate(7deg);animation:core 6s ease-in-out infinite}
+@keyframes float{0%,100%{translate:0 0;rotate:-7deg}50%{translate:0 -11px;rotate:-3deg}}
+@keyframes core{50%{transform:rotate(12deg) scale(1.06)}}
+.orb{position:absolute;border-radius:50%;background:linear-gradient(135deg,#fff,#9ceaff 50%,#8e61ff);box-shadow:0 0 18px #9a8dff}
+.orb.one{width:14px;height:14px;left:calc(50% - 122px);top:45px;animation:orbitA 7s ease-in-out infinite}
+.orb.two{width:10px;height:10px;right:calc(50% - 130px);top:66px;animation:orbitB 6s ease-in-out infinite}
+.orb.three{width:18px;height:18px;left:calc(50% + 88px);bottom:26px;background:linear-gradient(135deg,#ffdb8a,#ff4fa8);animation:orbitA 8s ease-in-out infinite reverse}
+.orb.four{width:9px;height:9px;left:calc(50% - 105px);bottom:35px;animation:orbitB 5s ease-in-out infinite reverse}
+@keyframes orbitA{50%{translate:12px -17px;scale:1.25}}
+@keyframes orbitB{50%{translate:-13px 17px;scale:.8}}
+.float-tag{position:absolute;font-size:22px;filter:drop-shadow(0 5px 8px #0008);animation:tagFloat 5s ease-in-out infinite}
+.tag-a{top:17px;left:calc(50% - 137px);animation-delay:-1s}.tag-b{right:calc(50% - 138px);top:22px;animation-delay:-2.5s}.tag-c{bottom:6px;left:calc(50% - 132px);animation-delay:-3s}.tag-d{right:calc(50% - 132px);bottom:8px;animation-delay:-.5s}
+@keyframes tagFloat{50%{translate:0 -10px;rotate:8deg}}
+.eyebrow{color:#9c99ca;font-size:10px;font-weight:800;letter-spacing:.32em;margin:0 0 8px}
+h1{font-size:clamp(35px,9vw,48px);line-height:.98;letter-spacing:.035em;margin:0;font-weight:950;font-style:italic;text-shadow:0 4px 24px #986cff55}
+h1 span{background:linear-gradient(90deg,#fff 10%,#c9c3ff 48%,#ff78c4 100%);background-clip:text;-webkit-background-clip:text;color:transparent}
+.subtitle{color:#b8b7db;font-size:13px;line-height:1.55;margin:13px auto 0;max-width:290px}
+.actions{display:grid;gap:13px;margin-top:21px}
+.action{position:relative;width:100%;height:59px;border:0;cursor:pointer;color:#201b50;font-size:13px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;clip-path:polygon(4% 0,96% 0,100% 100%,0 100%);transition:transform .18s,filter .18s;isolation:isolate}
+.action:before{content:"";position:absolute;inset:0;z-index:-1;transition:filter .2s}
+.action.primary:before{background:linear-gradient(100deg,#fcfcff,#ded5ff 58%,#b5a9ff)}
+.action.secondary:before{background:linear-gradient(100deg,#f044a1,#b447d6 57%,#7465ff)}
+.action.secondary{color:#fff}
+.action:hover{transform:translateY(-3px);filter:drop-shadow(0 8px 18px #a44cff55)}
+.action:active{transform:translateY(0) scale(.99)}
+.action .arrow{margin-left:10px;font-size:17px;vertical-align:-1px}
+.sep{display:flex;align-items:center;gap:13px;color:#9594bc;font-size:11px;margin:23px 0 14px}
+.sep:before,.sep:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#55517c)}
+.sep:after{transform:rotate(180deg)}
+.socials{display:flex;justify-content:center;gap:16px}
+.social{height:49px;width:49px;border-radius:50%;border:1px solid #ffffff26;background:#f4f3ff;color:#15172c;display:grid;place-items:center;cursor:pointer;transition:.18s;box-shadow:0 5px 18px #0004}
+.social:hover{transform:translateY(-4px);box-shadow:0 9px 25px #9261ff55}
+.social svg{width:21px;height:21px}
+.footer{margin:22px 0 0;text-align:center;color:#a8a8cb;font-size:12px}
+.footer button{color:#fff;background:none;border:0;font:inherit;font-weight:800;cursor:pointer;text-decoration:underline;text-decoration-color:#a77cff;text-underline-offset:4px}
+.note{margin-top:22px;text-align:center;color:#686b99;font-size:9px;letter-spacing:.18em}
+.modal-backdrop{position:fixed;inset:0;z-index:5;display:none;place-items:center;padding:18px;background:#030411c9;backdrop-filter:blur(12px)}
+.modal-backdrop.open{display:grid}
+.modal{width:min(100%,390px);padding:27px;border:1px solid #bca8ff52;border-radius:24px;background:linear-gradient(150deg,#1c1944,#0b1029);box-shadow:0 25px 90px #000a;position:relative}
+.modal h2{margin:0 0 7px;font-size:25px}
+.modal p{margin:0 0 20px;color:#aeadcf;font-size:13px;line-height:1.5}
+.close{position:absolute;right:16px;top:15px;border:0;background:#ffffff12;color:#fff;border-radius:50%;width:31px;height:31px;font-size:18px;cursor:pointer}
+.field{display:grid;gap:7px;margin:13px 0;color:#b8b5dc;font-size:11px;font-weight:700;letter-spacing:.06em}
+.field input{height:46px;border-radius:11px;border:1px solid #aaa0e33c;background:#090d24;color:white;padding:0 13px;font:inherit;outline:none}
+.field input:focus{border-color:#b17aff;box-shadow:0 0 0 3px #aa6cff20}
+.submit{width:100%;height:48px;border:0;border-radius:12px;margin-top:10px;background:linear-gradient(100deg,#f04b9f,#8c63ff);color:white;font-weight:900;letter-spacing:.1em;cursor:pointer}
+#formMessage{min-height:16px;margin:12px 0 0;color:#80edc5;font-size:12px}
+@media(max-width:390px){body{padding:10px}.shell{padding:23px 19px 21px;border-radius:25px}.scene{height:190px}.ring{width:184px;height:184px}.portal{scale:.9}.hero{padding-top:20px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<canvas id="world" aria-hidden="true"></canvas><div class="aurora" aria-hidden="true"></div>
+<main class="shell">
+  <div class="topline"><div class="brand-mark"><span class="brand-icon">N</span><span>NOT SAVED</span></div><div class="status"><i></i> WORLD ONLINE</div></div>
+  <section class="hero">
+    <div class="scene" aria-hidden="true">
+      <div class="ring"></div><div class="portal"><div class="portal-core">✦</div></div>
+      <span class="orb one"></span><span class="orb two"></span><span class="orb three"></span><span class="orb four"></span>
+      <span class="float-tag tag-a">⚔️</span><span class="float-tag tag-b">💎</span><span class="float-tag tag-c">🗝️</span><span class="float-tag tag-d">🪄</span>
+    </div>
+    <p class="eyebrow">YOUR NEXT CHAPTER STARTS HERE</p>
+    <h1><span>ENTER THE</span><br>UNKNOWN</h1>
+    <p class="subtitle">A world of choices, rivals and untold stories is waiting. Your journey starts now.</p>
+  </section>
+  <div class="actions">
+    <button class="action primary" id="signupBtn">CREATE ACCOUNT <span class="arrow">↗</span></button>
+    <button class="action secondary" id="loginBtn">LOG IN <span class="arrow">→</span></button>
+  </div>
+  <div class="sep">OR CONTINUE WITH</div>
+  <div class="socials">
+    <button class="social" aria-label="Continue with Google" title="Google"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.4-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-2 3.02v2.47h3.23c1.89-1.74 2.99-4.3 2.99-7.32Z"/><path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.62-2.45l-3.23-2.47c-.9.6-2.05.96-3.39.96-2.6 0-4.8-1.76-5.59-4.12H3.08v2.55A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.41 13.92a6 6 0 0 1 0-3.84V7.53H3.08a10 10 0 0 0 0 8.94l3.33-2.55Z"/><path fill="#EA4335" d="M12 5.96c1.47 0 2.79.51 3.83 1.52l2.87-2.87C16.96 2.99 14.7 2 12 2a10 10 0 0 0-8.92 5.53l3.33 2.55C7.2 7.72 9.4 5.96 12 5.96Z"/></svg></button>
+    <button class="social" aria-label="Continue with Apple" title="Apple"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#111" d="M16.7 12.8c0-2.1 1.7-3.1 1.8-3.2-1-1.5-2.5-1.7-3.1-1.7-1.3-.1-2.5.8-3.2.8-.7 0-1.7-.8-2.8-.8-1.4 0-2.7.8-3.5 2.1-1.5 2.6-.4 6.5 1.1 8.6.7 1 1.5 2.1 2.6 2.1 1 0 1.4-.7 2.7-.7s1.7.7 2.8.7 1.8-1 2.5-2c.8-1.1 1.1-2.2 1.1-2.2s-2-.8-2-3.7ZM14.6 6.5c.6-.8 1-1.8.9-2.8-.9 0-2 .6-2.6 1.3-.6.7-1 1.7-.9 2.7 1 .1 2-.5 2.6-1.2Z"/></svg></button>
+    <button class="social" aria-label="Continue with Discord" title="Discord"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#5865F2" d="M19.7 5.3A18 18 0 0 0 15.3 4l-.5 1a16 16 0 0 0-5.6 0l-.5-1a18 18 0 0 0-4.4 1.3C1.5 9.4.7 13.4 1.1 17.4a18 18 0 0 0 5.4 2.7l1.2-2a11 11 0 0 1-1.9-.9l.5-.4a13 13 0 0 0 11.4 0l.5.4-1.9.9 1.2 2a18 18 0 0 0 5.4-2.7c.5-4.6-.8-8.6-3.2-12.1ZM8.7 14.5c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2Z"/></svg></button>
+  </div>
+  <p class="footer">Already have an account? <button id="footerLogin">Log in</button></p>
+  <div class="note">NOT SAVED <span style="color:#e36bd0">✦</span> BUILD YOUR LEGACY</div>
+</main>
+<div class="modal-backdrop" id="authModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <section class="modal">
+    <button class="close" id="closeModal" aria-label="Close">×</button>
+    <h2 id="modalTitle">Create your account</h2>
+    <p id="modalCopy">Set up your player identity to begin your journey.</p>
+    <form id="authForm">
+      <label class="field">PLAYER NAME<input name="username" autocomplete="username" placeholder="Choose a player name" required></label>
+      <label class="field" id="emailField">EMAIL ADDRESS<input name="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+      <label class="field">PASSWORD<input name="password" type="password" autocomplete="current-password" placeholder="Enter password" minlength="6" required></label>
+      <button class="submit" type="submit" id="submitBtn">CREATE ACCOUNT</button>
+      <p id="formMessage" aria-live="polite"></p>
+    </form>
+  </section>
+</div>
+<script>
+(() => {
+  const canvas=document.getElementById('world'),ctx=canvas.getContext('2d');
+  let w=0,h=0,dpr=1,stars=[],last=0;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function resize(){
+    dpr=Math.min(window.devicePixelRatio||1,2);w=innerWidth;h=innerHeight;
+    canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const count=Math.min(130,Math.floor(w*h/8500));
+    stars=Array.from({length:count},()=>({x:Math.random()*w,y:Math.random()*h,z:.25+Math.random()*.85,r:.5+Math.random()*1.6,phase:Math.random()*Math.PI*2,hue:Math.random()}));
+  }
+  function draw(t){
+    const dt=Math.min((t-last)/1000||0,.04);last=t;ctx.clearRect(0,0,w,h);
+    for(const s of stars){
+      if(!reduced){s.y-=dt*(6+s.z*15);s.x+=Math.sin(t*.0003+s.phase)*dt*5;}
+      if(s.y<-5){s.y=h+5;s.x=Math.random()*w;}
+      const pulse=reduced?1:.55+.45*Math.sin(t*.0015+s.phase);
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r*s.z,0,Math.PI*2);
+      ctx.fillStyle=s.hue>.82?'rgba(255,104,197,'+(pulse*.72)+')':'rgba(164,180,255,'+(pulse*.65)+')';ctx.fill();
+      if(s.z>.8){ctx.beginPath();ctx.moveTo(s.x,s.y+5);ctx.lineTo(s.x,s.y+12);ctx.strokeStyle='rgba(151,126,255,.12)';ctx.stroke();}
+    }
+    // Distant drifting light bands create depth behind the welcome panel.
+    if(!reduced){
+      ctx.save();ctx.globalAlpha=.08;ctx.translate(w*.5,h*.5);ctx.rotate(Math.sin(t*.00012)*.09);
+      const g=ctx.createLinearGradient(-w,0,w,0);g.addColorStop(0,'transparent');g.addColorStop(.48,'#9a6dff');g.addColorStop(.7,'#fa55b6');g.addColorStop(1,'transparent');
+      ctx.fillStyle=g;ctx.fillRect(-w,-h*.34,w*2,3);ctx.restore();
+    }
+    requestAnimationFrame(draw);
+  }
+  addEventListener('resize',resize,{passive:true});resize();requestAnimationFrame(draw);
+  const modal=document.getElementById('authModal'),title=document.getElementById('modalTitle'),copy=document.getElementById('modalCopy'),submit=document.getElementById('submitBtn'),form=document.getElementById('authForm'),message=document.getElementById('formMessage'),email=document.getElementById('emailField');
+  function open(mode){
+    const signup=mode==='signup';title.textContent=signup?'Create your account':'Welcome back';copy.textContent=signup?'Set up your player identity to begin your journey.':'Log in to continue where your story left off.';submit.textContent=signup?'CREATE ACCOUNT':'LOG IN';email.hidden=!signup;email.querySelector('input').required=signup;message.textContent='';modal.classList.add('open');document.body.style.overflow='hidden';
+  }
+  function close(){modal.classList.remove('open');document.body.style.overflow='';}
+  document.getElementById('signupBtn').addEventListener('click',()=>open('signup'));
+  document.getElementById('loginBtn').addEventListener('click',()=>open('login'));
+  document.getElementById('footerLogin').addEventListener('click',()=>open('login'));
+  document.getElementById('closeModal').addEventListener('click',close);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+  form.addEventListener('submit',e=>{e.preventDefault();message.textContent='UI demo only — connect your game authentication service to create or access accounts.';});
+  document.querySelectorAll('.social').forEach(btn=>btn.addEventListener('click',()=>{message.textContent='Connect an OAuth provider to enable social sign-in.';open('login');message.textContent='Social sign-in needs a connected provider.';}));
+})();
+</script>
+</body>
+</html>
