@@ -75,6 +75,36 @@ h1 span{background:linear-gradient(90deg,#fff 10%,#c9c3ff 48%,#ff78c4 100%);back
 .field input:focus{border-color:#b17aff;box-shadow:0 0 0 3px #aa6cff20}
 .submit{width:100%;height:48px;border:0;border-radius:12px;margin-top:10px;background:linear-gradient(100deg,#f04b9f,#8c63ff);color:white;font-weight:900;letter-spacing:.1em;cursor:pointer}
 #formMessage{min-height:16px;margin:12px 0 0;color:#80edc5;font-size:12px}
+
+/* 4D-style depth pass: layered perspective, parallax and ambient motion */
+body{perspective:1100px}
+.shell{transform-style:preserve-3d;transform:perspective(1100px) rotateX(var(--tilt-y,0deg)) rotateY(var(--tilt-x,0deg));transition:transform .22s ease-out,box-shadow .35s}
+.shell:after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 12%,#b7a7ff0b 28%,#ffffff0c 42%,transparent 57%);background-size:220% 100%;animation:glassSweep 9s ease-in-out infinite}
+@keyframes glassSweep{0%,35%{background-position:150% 0}70%,100%{background-position:-40% 0}}
+.scene{transform-style:preserve-3d}
+.ring{transform-style:preserve-3d;filter:drop-shadow(0 0 12px #986bff66)}
+.portal{transform-style:preserve-3d;box-shadow:0 0 35px #9a60ff90,0 30px 55px #0009,inset 0 0 28px #e3caff77,0 0 0 7px #8e65ff12}
+.portal:after{content:"";position:absolute;inset:-13px;border-radius:inherit;border:1px solid #ff8bdc55;filter:blur(1px);transform:translateZ(-18px) scale(1.08);box-shadow:0 0 30px #d65cff55}
+.portal-core{transform:translateZ(28px) rotate(7deg);text-shadow:0 0 12px #fff,0 0 32px #a879ff}
+.float-tag,.orb{transform:translateZ(35px);will-change:transform}
+.action{transform-style:preserve-3d;box-shadow:0 9px 0 #594b9a,0 15px 28px #0007;animation:buttonHover 4.5s ease-in-out infinite;will-change:transform,filter}
+.action:before{box-shadow:inset 0 2px 0 #fff9,inset 0 -4px 9px #4e347b35}
+.action:after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(115deg,transparent 25%,#fff9 48%,transparent 68%);background-size:230% 100%;background-position:160% 0;animation:buttonShine 5.8s ease-in-out infinite}
+.action.secondary{box-shadow:0 9px 0 #512d91,0 15px 28px #0007}
+.action:hover{transform:translateY(-7px) rotateX(7deg) scale(1.015);filter:drop-shadow(0 15px 22px #a44cff77)}
+.action:active{transform:translateY(2px) scale(.985);box-shadow:0 3px 0 #594b9a,0 5px 12px #0007;animation:none}
+@keyframes buttonHover{0%,100%{translate:0 0}50%{translate:0 -2px}}
+@keyframes buttonShine{0%,40%{background-position:160% 0}75%,100%{background-position:-70% 0}}
+.social{transform-style:preserve-3d;box-shadow:0 8px 0 #77738e,0 13px 22px #0006,inset 0 2px 2px #fff;animation:socialFloat 5s ease-in-out infinite}
+.social:nth-child(2){animation-delay:-1.6s}.social:nth-child(3){animation-delay:-3.2s}
+.social:hover{transform:translateY(-7px) rotateX(13deg) rotateY(-10deg) scale(1.07);box-shadow:0 12px 0 #77738e,0 22px 28px #9261ff66}
+.social:active{transform:translateY(2px) scale(.96);box-shadow:0 3px 0 #77738e,0 5px 10px #0006}
+@keyframes socialFloat{0%,100%{translate:0 0}50%{translate:0 -3px}}
+.brand-icon{transform:translateZ(14px);box-shadow:0 5px 0 #492a85,0 0 24px #a14dff90,inset 0 1px #fff8}
+.modal{box-shadow:0 35px 100px #000c,0 0 55px #9663ff28,inset 0 1px #fff2;transform:perspective(900px) rotateX(2deg)}
+#world{filter:saturate(1.25)}
+@media(prefers-reduced-motion:reduce){.shell,.action,.social,.portal,.ring,.float-tag,.orb{animation:none!important;transition:none!important;transform:none!important}}
+
 @media(max-width:390px){body{padding:10px}.shell{padding:23px 19px 21px;border-radius:25px}.scene{height:190px}.ring{width:184px;height:184px}.portal{scale:.9}.hero{padding-top:20px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
 </style>
@@ -151,6 +181,25 @@ h1 span{background:linear-gradient(90deg,#fff 10%,#c9c3ff 48%,#ff78c4 100%);back
     requestAnimationFrame(draw);
   }
   addEventListener('resize',resize,{passive:true});resize();requestAnimationFrame(draw);
+  // Subtle pointer parallax adds layered 3D depth without intercepting clicks.
+  const shell=document.querySelector('.shell');
+  if(!reduced && window.matchMedia('(hover:hover) and (pointer:fine)').matches){
+    let moveFrame=0;
+    document.addEventListener('pointermove',e=>{
+      if(moveFrame)return;
+      moveFrame=requestAnimationFrame(()=>{
+        moveFrame=0;
+        const nx=(e.clientX/innerWidth-.5),ny=(e.clientY/innerHeight-.5);
+        shell.style.setProperty('--tilt-x',(nx*3.2).toFixed(2)+'deg');
+        shell.style.setProperty('--tilt-y',(-ny*3.2).toFixed(2)+'deg');
+        canvas.style.transform='translate3d('+(nx*-10)+'px,'+(ny*-10)+'px,0) scale(1.025)';
+      });
+    },{passive:true});
+    document.addEventListener('pointerleave',()=>{
+      shell.style.setProperty('--tilt-x','0deg');shell.style.setProperty('--tilt-y','0deg');canvas.style.transform='none';
+    });
+  }
+
   const modal=document.getElementById('authModal'),title=document.getElementById('modalTitle'),copy=document.getElementById('modalCopy'),submit=document.getElementById('submitBtn'),form=document.getElementById('authForm'),message=document.getElementById('formMessage'),email=document.getElementById('emailField');
   function open(mode){
     const signup=mode==='signup';title.textContent=signup?'Create your account':'Welcome back';copy.textContent=signup?'Set up your player identity to begin your journey.':'Log in to continue where your story left off.';submit.textContent=signup?'CREATE ACCOUNT':'LOG IN';email.hidden=!signup;email.querySelector('input').required=signup;message.textContent='';modal.classList.add('open');document.body.style.overflow='hidden';
