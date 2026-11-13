@@ -78,7 +78,7 @@ h1 span{background:linear-gradient(90deg,#fff 10%,#c9c3ff 48%,#ff78c4 100%);back
 
 /* 4D-style depth pass: layered perspective, parallax and ambient motion */
 body{perspective:1100px}
-.shell{transform-style:preserve-3d;transform:perspective(1100px) rotateX(var(--tilt-y,0deg)) rotateY(var(--tilt-x,0deg));transition:transform .22s ease-out,box-shadow .35s}
+.shell{transform-style:preserve-3d;transform:none;transition:box-shadow .35s}
 .shell:after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;border-radius:inherit;background:linear-gradient(115deg,transparent 12%,#b7a7ff0b 28%,#ffffff0c 42%,transparent 57%);background-size:220% 100%;animation:glassSweep 9s ease-in-out infinite}
 @keyframes glassSweep{0%,35%{background-position:150% 0}70%,100%{background-position:-40% 0}}
 .scene{transform-style:preserve-3d}
@@ -181,24 +181,6 @@ body{perspective:1100px}
     requestAnimationFrame(draw);
   }
   addEventListener('resize',resize,{passive:true});resize();requestAnimationFrame(draw);
-  // Subtle pointer parallax adds layered 3D depth without intercepting clicks.
-  const shell=document.querySelector('.shell');
-  if(!reduced && window.matchMedia('(hover:hover) and (pointer:fine)').matches){
-    let moveFrame=0;
-    document.addEventListener('pointermove',e=>{
-      if(moveFrame)return;
-      moveFrame=requestAnimationFrame(()=>{
-        moveFrame=0;
-        const nx=(e.clientX/innerWidth-.5),ny=(e.clientY/innerHeight-.5);
-        shell.style.setProperty('--tilt-x',(nx*3.2).toFixed(2)+'deg');
-        shell.style.setProperty('--tilt-y',(-ny*3.2).toFixed(2)+'deg');
-        canvas.style.transform='translate3d('+(nx*-10)+'px,'+(ny*-10)+'px,0) scale(1.025)';
-      });
-    },{passive:true});
-    document.addEventListener('pointerleave',()=>{
-      shell.style.setProperty('--tilt-x','0deg');shell.style.setProperty('--tilt-y','0deg');canvas.style.transform='none';
-    });
-  }
 
   const modal=document.getElementById('authModal'),title=document.getElementById('modalTitle'),copy=document.getElementById('modalCopy'),submit=document.getElementById('submitBtn'),form=document.getElementById('authForm'),message=document.getElementById('formMessage'),email=document.getElementById('emailField');
   function open(mode){
