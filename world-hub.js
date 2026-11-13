@@ -110,14 +110,83 @@ root.append(nsCharScreen,nsProfile);
 const nsEsc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nsRarity={Legendary:'#f6bd55',Epic:'#c18aff',Rare:'#61bbff',Uncommon:'#79dfa8',Common:'#c5ced9'};
 function nsPortrait(c){
+ if(ns3DPortraits[c.id])return '<img src="'+ns3DPortraits[c.id]+'" alt="'+nsEsc(c.name)+' 2.5D character model" style="width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 10px 10px #0008)"/>
  const palette={Fire:['#ff9a42','#7f2b26','#f6d18b'],Ice:['#a8edff','#315d8d','#e8fbff'],Shadow:['#a78bfa','#292044','#d5c7ff'],Light:['#ffe39b','#98733c','#fff7d9'],Dragon:['#ef7650','#512b35','#ffd08b'],Lightning:['#f3d36b','#57449d','#fff1a3'],Nature:['#87d69a','#315b45','#d5f2ad'],Water:['#70d7ee','#285b80','#c2f6ff'],Earth:['#c5a77d','#514333','#e6d2ad'],Moon:['#c4c5ff','#46436f','#f4edff'],Metal:['#c6d3df','#485b6e','#f4f8ff'],Wind:['#b3e9e8','#356c78','#e5ffff'],Beast:['#d7a477','#63412f','#f4d3a2'],Death:['#b3a0bd','#40364d','#e3d5ed']}[c.element]||['#a8c8ee','#34445f','#e8f3ff'];
  const [glow,armor,trim]=palette;const seed=Number(c.id.split('-')[1])||1;const angle=(seed*37)%360;const cape=seed%2?'M44 218 L57 116 L93 98 L107 220Z':'M37 220 L52 120 L94 104 L115 220Z';
  const weapon=c.role.toLowerCase().includes('archer')||c.role.toLowerCase().includes('ranged')?'<path d="M119 74 Q164 112 119 160 M119 74 Q99 117 119 160 M119 74 L119 160" fill="none" stroke="'+trim+'" stroke-width="4"/><path d="M118 117 L155 117" stroke="#fff" stroke-width="2"/>':c.role.toLowerCase().includes('mage')||c.role.toLowerCase().includes('healer')||c.role.toLowerCase().includes('support')||c.role.toLowerCase().includes('summoner')?'<path d="M132 64 L132 207" stroke="'+trim+'" stroke-width="6"/><circle cx="132" cy="57" r="13" fill="'+glow+'" stroke="'+trim+'" stroke-width="3"/><path d="M132 37 L132 77 M112 57 L152 57" stroke="#fff" stroke-width="2"/>':'<path d="M132 54 L132 183" stroke="'+trim+'" stroke-width="7"/><path d="M120 76 L145 76 L132 35Z" fill="'+glow+'" stroke="'+trim+'" stroke-width="3"/><path d="M119 171 L145 171" stroke="'+trim+'" stroke-width="5"/>';
  const helm=seed%3===0?'<path d="M69 80 L75 39 L91 22 L107 39 L114 80 L101 68 L91 75 L80 68Z" fill="'+armor+'" stroke="'+trim+'" stroke-width="3"/>':'<path d="M71 65 Q91 17 111 65 L106 83 L76 83Z" fill="'+armor+'" stroke="'+trim+'" stroke-width="3"/>';
  return '<svg viewBox="0 0 180 230" role="img" aria-label="'+nsEsc(c.name)+' character illustration" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="bg'+seed+'" x2="0" y2="1"><stop stop-color="'+glow+'" stop-opacity=".45"/><stop offset="1" stop-color="#07182c"/></linearGradient><linearGradient id="metal'+seed+'" x2="1" y2="1"><stop stop-color="'+trim+'"/><stop offset=".48" stop-color="'+armor+'"/><stop offset="1" stop-color="#101c30"/></linearGradient><filter id="shadow'+seed+'"><feGaussianBlur stdDeviation="5"/></filter></defs><rect width="180" height="230" fill="url(#bg'+seed+')"/><circle cx="91" cy="91" r="70" fill="none" stroke="'+glow+'" stroke-opacity=".35" stroke-width="1.5"/><circle cx="91" cy="91" r="57" fill="none" stroke="'+trim+'" stroke-opacity=".24" stroke-dasharray="4 7"/><path d="'+cape+'" fill="'+armor+'" stroke="'+trim+'" stroke-opacity=".6" stroke-width="2"/><ellipse cx="91" cy="213" rx="47" ry="9" fill="#000" opacity=".5" filter="url(#shadow'+seed+')"/>'+weapon+'<path d="M65 105 L53 139 L61 192 L120 192 L128 139 L116 105Z" fill="url(#metal'+seed+')" stroke="'+trim+'" stroke-width="3"/><path d="M75 107 L91 124 L107 107 L112 156 L91 174 L69 156Z" fill="'+armor+'" stroke="'+trim+'" stroke-width="2"/><path d="M91 125 L91 169 M74 145 L108 145" stroke="'+glow+'" stroke-width="3"/><path d="M67 113 L48 129 L40 166 L52 172 L72 143 M115 113 L135 129 L143 166 L131 172 L110 143" fill="'+armor+'" stroke="'+trim+'" stroke-width="4"/><path d="M72 184 L66 220 L87 220 L94 184 M96 184 L103 220 L124 220 L111 184" fill="#18263a" stroke="'+trim+'" stroke-width="3"/><path d="M68 197 L88 197 M99 197 L120 197" stroke="'+glow+'" stroke-width="3"/><path d="M70 67 Q91 50 112 67 L108 99 Q91 119 74 99Z" fill="#a96f56" stroke="'+trim+'" stroke-width="2"/><path d="M75 83 L87 85 M96 85 L107 83" stroke="#1a1723" stroke-width="4" stroke-linecap="round"/><path d="M86 101 Q91 105 97 101" fill="none" stroke="#3b2024" stroke-width="2"/>'+helm+'<path d="M59 118 L48 135 L61 143 M122 118 L135 135 L122 143" fill="none" stroke="'+glow+'" stroke-width="3"/><path d="M91 128 L85 144 L97 144Z" fill="'+trim+'"/><path d="M32 44 L40 36 L48 44 L40 52Z M140 36 L148 28 L156 36 L148 44Z" fill="'+glow+'" opacity=".8"/><path d="M20 205 Q90 '+(190+(seed%4)*5)+' 160 205" fill="none" stroke="'+trim+'" stroke-opacity=".45" stroke-width="2"/></svg>';
 }
+
+/* True 2.5D character portraits: procedural 3D models rendered from a fixed three-quarter camera. */
+const ns3DPortraits=Object.create(null);
+let nsActiveCharacterId=null;
+async function nsBuild3DPortraits(){
+ if(window.__ns3DPortraitsBuilding||window.__ns3DPortraitsReady)return;
+ window.__ns3DPortraitsBuilding=true;
+ try{
+  const THREE=await import('https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js');
+  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
+  renderer.setSize(256,320,false);renderer.setPixelRatio(1);
+  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
+  const scene=new THREE.Scene();scene.background=new THREE.Color(0x101f35);
+  scene.add(new THREE.HemisphereLight(0xd9efff,0x252033,2.0));
+  const key=new THREE.DirectionalLight(0xffe2bd,3.2);key.position.set(-4,7,6);scene.add(key);
+  const rim=new THREE.DirectionalLight(0x75cfff,2.4);rim.position.set(4,4,-5);scene.add(rim);
+  const camera=new THREE.OrthographicCamera(-2.05,2.05,2.56,-2.56,.1,50);camera.position.set(5,3.1,8);camera.lookAt(0,1.95,0);
+  const target=new THREE.WebGLRenderTarget(256,320,{format:THREE.RGBAFormat,depthBuffer:true});
+  const pixels=new Uint8Array(256*320*4),out=document.createElement('canvas');out.width=256;out.height=320;
+  const ctx=out.getContext('2d'),frame=ctx.createImageData(256,320);
+  const palettes={Fire:[0xe66b37,0x5b2425,0xffd18b],Ice:[0x9bdff4,0x294e79,0xe8fbff],Shadow:[0x8267bb,0x242039,0xc9b8f4],Light:[0xe7c36e,0x78603d,0xfff1c4],Dragon:[0xc75b42,0x422634,0xffc27c],Lightning:[0xe2c04f,0x403b78,0xffef9a],Nature:[0x70b77c,0x294a39,0xc8e9a6],Water:[0x55b8d5,0x254d70,0xc1f5ff],Earth:[0x9a7953,0x45382e,0xe4c99b],Moon:[0xaaa7e8,0x3d3b65,0xf0eaff],Metal:[0x9aaebf,0x354858,0xe5f4ff],Wind:[0x82c9c6,0x315b66,0xe1ffff],Beast:[0xb68159,0x523626,0xf2c99b],Death:[0x9a8ba8,0x332d40,0xe1d3ed]};
+  const mat=(color,metalness=.25,roughness=.48)=>new THREE.MeshStandardMaterial({color,metalness,roughness});
+  function part(g,geo,m,x,y,z,sx=1,sy=1,sz=1){const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;o.receiveShadow=true;g.add(o);return o}
+  for(const c of NS_CHARACTERS){
+   const [main,dark,trim]=palettes[c.element]||[0x829bb7,0x35445d,0xe2edfa];
+   const g=new THREE.Group(),armor=mat(main,.48,.34),shadow=mat(dark,.32,.55),metal=mat(trim,.82,.24),skin=mat(0xb77e62,.05,.72);
+   // Flowing mantle, armored torso, layered pauldrons and articulated limbs.
+   part(g,new THREE.ConeGeometry(.92,2.35,7),shadow,0,1.55,-.23,1,.9,.42).rotation.z=.04;
+   part(g,new THREE.CapsuleGeometry(.48,.88,6,10),armor,0,2.15,0,1,.9,.72);
+   part(g,new THREE.BoxGeometry(.72,.72,.18),metal,0,2.12,.48,1,1,1);
+   part(g,new THREE.SphereGeometry(.29,20,16),skin,0,3.12,.02,1,1.05,.95);
+   part(g,new THREE.SphereGeometry(.34,8,6),shadow,0,3.34,-.02,1.12,.65,1);
+   part(g,new THREE.BoxGeometry(.68,.12,.13),metal,0,3.02,.28);
+   for(const side of [-1,1]){
+    part(g,new THREE.SphereGeometry(.28,12,10),metal,side*.57,2.62,0,1,.78,1);
+    const arm=part(g,new THREE.CapsuleGeometry(.14,.62,5,8),armor,side*.66,2.15,.03,1,1,1);arm.rotation.z=side*-.18;
+    const glove=part(g,new THREE.SphereGeometry(.16,12,10),shadow,side*.72,1.77,.08);
+    const leg=part(g,new THREE.CapsuleGeometry(.19,.72,5,8),shadow,side*.23,.83,0,1,1,1);leg.rotation.z=side*.04;
+    part(g,new THREE.BoxGeometry(.43,.2,.66),metal,side*.23,.28,.12);
+   }
+   // Element crest and a distinct weapon silhouette.
+   part(g,new THREE.IcosahedronGeometry(.19,1),new THREE.MeshStandardMaterial({color:trim,emissive:main,emissiveIntensity:.22,metalness:.55,roughness:.2}),0,2.42,.58,1,1.25,.55);
+   if(/archer|ranged/i.test(c.role)){
+    const bow=part(g,new THREE.TorusGeometry(.48,.045,8,24,Math.PI),metal,.95,2.25,.05);bow.rotation.z=Math.PI/2;
+    part(g,new THREE.CylinderGeometry(.018,.018,1.45,8),metal,.95,2.25,.08,1,1,1).rotation.z=.08;
+   }else if(/mage|healer|support|summoner/i.test(c.role)){
+    part(g,new THREE.CylinderGeometry(.045,.065,1.75,10),metal,.92,2.02,.02);
+    part(g,new THREE.IcosahedronGeometry(.2,2),new THREE.MeshStandardMaterial({color:trim,emissive:main,emissiveIntensity:1.1}),.92,2.95,.02);
+   }else{
+    const blade=part(g,new THREE.BoxGeometry(.12,1.55,.08),metal,.92,2.28,.02);blade.rotation.z=-.12;
+    part(g,new THREE.ConeGeometry(.12,.38,6),metal,.92,3.22,.02).rotation.z=Math.PI;
+    part(g,new THREE.BoxGeometry(.48,.09,.13),metal,.92,1.64,.02);
+   }
+   // Small individual crest variations make the silhouettes less repetitive.
+   if(Number(c.id.split('-')[1])%3===0)part(g,new THREE.ConeGeometry(.16,.62,5),metal,-.22,3.56,-.03).rotation.z=-.18;
+   g.rotation.y=-.12;scene.add(g);
+   renderer.setRenderTarget(target);renderer.clear();renderer.render(scene,camera);renderer.readRenderTargetPixels(target,0,0,256,320,pixels);renderer.setRenderTarget(null);
+   for(let y=0;y<320;y++)for(let x=0;x<256;x++){const src=((319-y)*256+x)*4,dst=(y*256+x)*4;frame.data[dst]=pixels[src];frame.data[dst+1]=pixels[src+1];frame.data[dst+2]=pixels[src+2];frame.data[dst+3]=pixels[src+3]}
+   ctx.putImageData(frame,0,0);ns3DPortraits[c.id]=out.toDataURL('image/png');scene.remove(g);
+  }
+  target.dispose();renderer.dispose();window.__ns3DPortraitsReady=true;
+  nsRenderCharacters();
+  if(nsActiveCharacterId)nsOpenCharacter(nsActiveCharacterId);
+ }catch(err){console.warn('3D character portraits unavailable; retaining fallback artwork',err)}
+ finally{window.__ns3DPortraitsBuilding=false}
+}
+
 function nsRenderCharacters(){const query=$('ns-char-search').value.trim().toLowerCase(),rarity=$('ns-char-rarity').value;const list=NS_CHARACTERS.filter(c=>(rarity==='all'||c.rarity===rarity)&&[c.name,c.element,c.role].join(' ').toLowerCase().includes(query));$('ns-char-grid').innerHTML=list.map(c=>`<button class="ns-char-card" data-character="${c.id}" style="--glow:${nsRarity[c.rarity]}33;--rarity:${nsRarity[c.rarity]}"><div class="ns-char-art">${nsPortrait(c)}</div><div class="ns-char-cardbody"><div class="ns-char-name">${nsEsc(c.name)}</div><div class="ns-char-meta"><span>${nsEsc(c.element)} · ${nsEsc(c.role)}</span><span class="ns-rarity">${c.rarity.toUpperCase()}</span></div><div class="ns-char-meta"><span>ATK ${c.attack}</span><span>HP ${c.health}</span></div><div class="ns-statbar"><span style="--value:${Math.min(100,c.attack/13)}%"></span></div></div></button>`).join('')||'<p style="grid-column:1/-1;color:#b9d4ec;text-align:center">No characters match this search.</p>'}
-function nsOpenCharacter(id){const c=NS_CHARACTERS.find(x=>x.id===id);if(!c)return;const inner=$('ns-profile-inner');inner.innerHTML=`<div class="ns-profile-hero" style="--glow:${nsRarity[c.rarity]}44"><div class="ns-profile-portrait">${nsPortrait(c)}</div><div class="ns-profile-copy"><div class="ns-rarity" style="color:${nsRarity[c.rarity]}">${c.rarity.toUpperCase()} · ${nsEsc(c.element.toUpperCase())}</div><h2>${nsEsc(c.name)}</h2><div class="ns-element">${nsEsc(c.role)} · COMBAT PROFILE</div><p>${nsEsc(c.bio)}</p><button class="ns-close" id="ns-profile-close">← COLLECTION</button></div></div><div class="ns-profile-body"><div class="ns-stat-grid"><div class="ns-stat"><b>${c.attack}</b><small>ATTACK DAMAGE</small></div><div class="ns-stat"><b>${c.defense}</b><small>DEFENSE</small></div><div class="ns-stat"><b>${c.health}</b><small>HEALTH</small></div><div class="ns-stat"><b>${c.range}/6</b><small>RANGE</small></div></div><div><b>ABILITIES & COMBAT ACTIONS</b><p style="color:#9fbdd8;font-size:11px;margin:5px 0 10px">Damage values are percentages of this character's attack stat unless stated otherwise. Range 1 is melee; range 6 is long-range.</p><div class="ns-abilities"><article class="ns-ability"><b>BASIC ATTACK · ${nsEsc(c.basic.name)}</b><p>${nsEsc(c.basic.description)}</p><small>ATTACK · RANGE ${c.range}</small></article><article class="ns-ability"><b>ULTIMATE · ${nsEsc(c.ultimate.name)}</b><p>${nsEsc(c.ultimate.description)}</p><small>ULTIMATE · RANGE ${c.range}</small></article><article class="ns-ability"><b>PASSIVE · ${nsEsc(c.passive.name)}</b><p>${nsEsc(c.passive.description)}</p><small>PASSIVE · ALWAYS ACTIVE WHEN CONDITIONS APPLY</small></article><article class="ns-ability"><b>◈ DEFENSE PROFILE</b><p>${nsEsc(c.role)} · ${c.defense} defense · ${c.health} health. Defensive actions and resistance are described in the ability text.</p><small>CLASS · ${nsEsc(c.element.toUpperCase())}</small></article></div></div></div>`;nsProfile.classList.add('open');$('ns-profile-close').onclick=()=>nsProfile.classList.remove('open')}
+function nsOpenCharacter(id){const c=NS_CHARACTERS.find(x=>x.id===id);if(!c)return;nsActiveCharacterId=id;const inner=$('ns-profile-inner');inner.innerHTML=`<div class="ns-profile-hero" style="--glow:${nsRarity[c.rarity]}44"><div class="ns-profile-portrait">${nsPortrait(c)}</div><div class="ns-profile-copy"><div class="ns-rarity" style="color:${nsRarity[c.rarity]}">${c.rarity.toUpperCase()} · ${nsEsc(c.element.toUpperCase())}</div><h2>${nsEsc(c.name)}</h2><div class="ns-element">${nsEsc(c.role)} · COMBAT PROFILE</div><p>${nsEsc(c.bio)}</p><button class="ns-close" id="ns-profile-close">← COLLECTION</button></div></div><div class="ns-profile-body"><div class="ns-stat-grid"><div class="ns-stat"><b>${c.attack}</b><small>ATTACK DAMAGE</small></div><div class="ns-stat"><b>${c.defense}</b><small>DEFENSE</small></div><div class="ns-stat"><b>${c.health}</b><small>HEALTH</small></div><div class="ns-stat"><b>${c.range}/6</b><small>RANGE</small></div></div><div><b>ABILITIES & COMBAT ACTIONS</b><p style="color:#9fbdd8;font-size:11px;margin:5px 0 10px">Damage values are percentages of this character's attack stat unless stated otherwise. Range 1 is melee; range 6 is long-range.</p><div class="ns-abilities"><article class="ns-ability"><b>BASIC ATTACK · ${nsEsc(c.basic.name)}</b><p>${nsEsc(c.basic.description)}</p><small>ATTACK · RANGE ${c.range}</small></article><article class="ns-ability"><b>ULTIMATE · ${nsEsc(c.ultimate.name)}</b><p>${nsEsc(c.ultimate.description)}</p><small>ULTIMATE · RANGE ${c.range}</small></article><article class="ns-ability"><b>PASSIVE · ${nsEsc(c.passive.name)}</b><p>${nsEsc(c.passive.description)}</p><small>PASSIVE · ALWAYS ACTIVE WHEN CONDITIONS APPLY</small></article><article class="ns-ability"><b>◈ DEFENSE PROFILE</b><p>${nsEsc(c.role)} · ${c.defense} defense · ${c.health} health. Defensive actions and resistance are described in the ability text.</p><small>CLASS · ${nsEsc(c.element.toUpperCase())}</small></article></div></div></div>`;nsProfile.classList.add('open');$('ns-profile-close').onclick=()=>nsProfile.classList.remove('open')}
+nsBuild3DPortraits();
 $('ns-char-grid').addEventListener('click',e=>{const b=e.target.closest('[data-character]');if(b)nsOpenCharacter(b.dataset.character)});
 $('ns-char-search').addEventListener('input',nsRenderCharacters);$('ns-char-rarity').addEventListener('change',nsRenderCharacters);
 $('ns-char-back').onclick=()=>nsCharScreen.classList.remove('open');
