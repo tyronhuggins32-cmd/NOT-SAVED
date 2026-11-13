@@ -290,7 +290,7 @@ function renderProfile(){
  const panel=document.getElementById('ns-profile-panel');if(!panel||!player)return;
  const name=playerProfile?.username||player.user_metadata?.username||player.email?.split('@')[0]||'Adventurer';
  const level=Math.max(1,Number(playerProfile?.level)||1),rank=playerProfile?.rank||'Unranked';
- const xp=Math.max(0,Number(gameSave?.world?.progression?.xp)||0),need=100+(level-1)*25;
+ const xp=Math.max(0,Number(playerProfile?.xp)||0),need=100+(level-1)*25;
  const pct=Math.min(100,Math.round(xp/need*100));
  const xpLabel=panel.querySelector('#ns-xp-label'),xpFill=panel.querySelector('#ns-xp-fill'),unlock=panel.querySelector('#ns-map-unlocks');
  if(xpLabel)xpLabel.textContent=xp+' / '+need+' XP';if(xpFill)xpFill.style.width=pct+'%';
@@ -300,7 +300,7 @@ function renderProfile(){
  panel.querySelector('#ns-profile-avatar').textContent=name.slice(0,1).toUpperCase();
  panel.querySelector('#ns-profile-id').textContent=player.id;
  panel.querySelector('#ns-profile-level').textContent=String(level);
- panel.querySelector('#ns-profile-rank').textContent=rank;
+ panel.querySelector('#ns-profile-rank').textContent=rank+' · '+(Number(playerProfile?.rank_points)||0)+' RP';
  const playerTag=document.getElementById('ns-player');if(playerTag)playerTag.textContent='PLAYER · '+name.toUpperCase();
 }
 async function persistSave(){
