@@ -20,12 +20,49 @@ const $=id=>document.getElementById(id),zones={emerald:['Emerald Kingdom','Ancie
 function currentPlayerLevel(){return Math.max(1,Number(window.NOT_SAVED_PROFILE?.get?.()?.level)||1)}
 function showZone(zoneId){zone=zoneId;const required=zoneRequirements[zoneId]||1,level=currentPlayerLevel(),locked=level<required;$('ns-zone-title').textContent=zones[zoneId][0];$('ns-zone-copy').textContent=zones[zoneId][1]+'\\n\\n'+(locked?'LOCKED · Requires level '+required+'. Your level: '+level+'.':'UNLOCKED · Required level '+required+'.');const enter=$('ns-enter');enter.disabled=locked;enter.textContent=locked?'LOCKED · LEVEL '+required:'ENTER KINGDOM';enter.style.opacity=locked?'.55':'1';enter.style.cursor=locked?'not-allowed':'pointer';$('ns-location').classList.add('open');sound(620)}
 
+
+const kingdomMusic={audio:null,source:null,gain:null,objectUrl:null,active:false,fadeTimer:null};
+async function startKingdomMusic(){
+ if(!music||kingdomMusic.active)return;
+ try{
+  const response=await fetch('./assets/kingdom-explore-music.mp3');
+  if(!response.ok)throw new Error('Kingdom music asset unavailable');
+  const blob=await response.blob();
+  kingdomMusic.objectUrl=URL.createObjectURL(blob);
+  const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContextClass)return;
+  kingdomMusic.audio=kingdomMusic.audio||new AudioContextClass();
+  await kingdomMusic.audio.resume();
+  const decoded=await kingdomMusic.audio.decodeAudioData(await blob.arrayBuffer());
+  const source=kingdomMusic.audio.createBufferSource(),gain=kingdomMusic.audio.createGain();
+  source.buffer=decoded;source.loop=true;
+  gain.gain.setValueAtTime(0,kingdomMusic.audio.currentTime);
+  gain.gain.linearRampToValueAtTime(.28,kingdomMusic.audio.currentTime+1.8);
+  source.connect(gain);gain.connect(kingdomMusic.audio.destination);source.start();
+  kingdomMusic.source=source;kingdomMusic.gain=gain;kingdomMusic.active=true;
+ }catch(error){console.warn('Kingdom background music could not start:',error);}
+}
+function stopKingdomMusic(){
+ if(!kingdomMusic.gain||!kingdomMusic.audio){kingdomMusic.active=false;return;}
+ const now=kingdomMusic.audio.currentTime;
+ kingdomMusic.gain.gain.cancelScheduledValues(now);
+ kingdomMusic.gain.gain.setValueAtTime(kingdomMusic.gain.gain.value,now);
+ kingdomMusic.gain.gain.linearRampToValueAtTime(0,now+.6);
+ clearTimeout(kingdomMusic.fadeTimer);
+ kingdomMusic.fadeTimer=setTimeout(()=>{
+  try{kingdomMusic.source?.stop();}catch(e){}
+  kingdomMusic.source=null;kingdomMusic.active=false;
+  if(kingdomMusic.objectUrl)URL.revokeObjectURL(kingdomMusic.objectUrl);
+  kingdomMusic.objectUrl=null;
+ },650);
+}
+
 function sound(f=440,d=.2,type='sine'){if(!sfx)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();let o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.025,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+d);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+d)}catch(e){}}
-function start(name){root.classList.add('active');$('ns-player').textContent='PLAYER · '+(name||'ADVENTURER').toUpperCase();$('ns-cinema').style.display='grid';$('ns-loading').classList.remove('show');$('ns-map').style.display='none';sound(170,.7,'sawtooth');setTimeout(()=>{sound(440,.8);$('ns-cinema').style.display='none';$('ns-loading').classList.add('show');let p=0;let words=['Gathering the kingdoms...','Awakening rivers and waterfalls...','Lighting the ancient cities...','Preparing creatures and hidden paths...','Opening the world...'];let t=setInterval(()=>{p=Math.min(100,p+9+Math.floor(Math.random()*12));$('ns-fill').style.width=p+'%';$('ns-percent').textContent=p+'%';$('ns-load-copy').textContent=words[Math.min(4,Math.floor(p/21))];if(p===100){clearInterval(t);setTimeout(()=>{$('ns-loading').classList.remove('show');$('ns-map').style.display='block';sound(523,.8)},450)}},260)},2400)}
+function start(name){stopKingdomMusic();root.classList.add('active');$('ns-player').textContent='PLAYER · '+(name||'ADVENTURER').toUpperCase();$('ns-cinema').style.display='grid';$('ns-loading').classList.remove('show');$('ns-map').style.display='none';sound(170,.7,'sawtooth');setTimeout(()=>{sound(440,.8);$('ns-cinema').style.display='none';$('ns-loading').classList.add('show');let p=0;let words=['Gathering the kingdoms...','Awakening rivers and waterfalls...','Lighting the ancient cities...','Preparing creatures and hidden paths...','Opening the world...'];let t=setInterval(()=>{p=Math.min(100,p+9+Math.floor(Math.random()*12));$('ns-fill').style.width=p+'%';$('ns-percent').textContent=p+'%';$('ns-load-copy').textContent=words[Math.min(4,Math.floor(p/21))];if(p===100){clearInterval(t);setTimeout(()=>{$('ns-loading').classList.remove('show');$('ns-map').style.display='block';sound(523,.8);if(music)startKingdomMusic()},450)}},260)},2400)}
 window.NSStartWorld=start;
 root.querySelectorAll('.island').forEach(el=>el.addEventListener('click',()=>showZone(el.dataset.zone)));
 $('ns-close').onclick=()=>$('ns-location').classList.remove('open');$('ns-enter').onclick=()=>{if(zone){const required=zoneRequirements[zone]||1;if(currentPlayerLevel()<required){showZone(zone);return;}$('ns-location').classList.remove('open');alert(zones[zone][0]+' unlocked. The kingdom gameplay scene can now be entered when its scene is connected.')}};
-$('ns-settings').onclick=()=>$('ns-settings-panel').classList.toggle('open');$('ns-sound').onclick=()=>{music=!music;$('ns-sound').textContent=music?'♫ ON':'♫ OFF';if(music)sound(520)};$('ns-music').onchange=e=>{music=e.target.checked;$('ns-sound').textContent=music?'♫ ON':'♫ OFF'};$('ns-sfx').onchange=e=>sfx=e.target.checked;$('ns-effects').onchange=e=>root.querySelector('.sky').style.display=e.target.checked?'block':'none';
+$('ns-settings').onclick=()=>$('ns-settings-panel').classList.toggle('open');$('ns-sound').onclick=()=>{music=!music;$('ns-sound').textContent=music?'♫ ON':'♫ OFF';$('ns-music').checked=music;if(music){sound(520);if($('ns-map').style.display!=='none')startKingdomMusic()}else stopKingdomMusic()};$('ns-music').onchange=e=>{music=e.target.checked;$('ns-sound').textContent=music?'♫ ON':'♫ OFF';if(music){if($('ns-map').style.display!=='none')startKingdomMusic()}else stopKingdomMusic()};$('ns-sfx').onchange=e=>sfx=e.target.checked;$('ns-effects').onchange=e=>root.querySelector('.sky').style.display=e.target.checked?'block':'none';
 root.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{sound(430);alert(b.dataset.nav+' screen is ready to connect to the game systems.')});
 
 
