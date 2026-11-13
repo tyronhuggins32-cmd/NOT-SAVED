@@ -24,5 +24,5 @@ root.querySelectorAll('.island').forEach(el=>el.addEventListener('click',()=>{zo
 $('ns-close').onclick=()=>$('ns-location').classList.remove('open');$('ns-enter').onclick=()=>{if(zone){$('ns-location').classList.remove('open');alert(zones[zone][0]+' selected. Connect this location to its gameplay scene next.')}};
 $('ns-settings').onclick=()=>$('ns-settings-panel').classList.toggle('open');$('ns-sound').onclick=()=>{music=!music;$('ns-sound').textContent=music?'♫ ON':'♫ OFF';if(music)sound(520)};$('ns-music').onchange=e=>{music=e.target.checked;$('ns-sound').textContent=music?'♫ ON':'♫ OFF'};$('ns-sfx').onchange=e=>sfx=e.target.checked;$('ns-effects').onchange=e=>root.querySelector('.sky').style.display=e.target.checked?'block':'none';
 root.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{sound(430);alert(b.dataset.nav+' screen is ready to connect to the game systems.')});
-const form=document.getElementById('authForm');if(form)form.addEventListener('submit',e=>{e.preventDefault();e.stopImmediatePropagation();let fd=new FormData(form);let name=String(fd.get('username')||'Adventurer').trim();document.getElementById('authModal').classList.remove('open');start(name)},true);
+
 })();
