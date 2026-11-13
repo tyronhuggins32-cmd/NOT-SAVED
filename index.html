@@ -277,14 +277,19 @@ function addProfilePanel(){
  controls.appendChild(button);
  const panel=document.createElement('section');panel.id='ns-profile-panel';
  panel.style.cssText='display:none;position:absolute;z-index:12;right:14px;top:68px;width:min(330px,calc(100vw - 28px));padding:18px;border-radius:18px;background:linear-gradient(145deg,#152f4d,#07182d);border:1px solid #9ddcff66;box-shadow:0 20px 60px #001b;color:white;font-family:system-ui,sans-serif';
- panel.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><b style="letter-spacing:.12em">PLAYER PROFILE</b><button id="ns-profile-close" style="border:0;border-radius:50%;padding:5px 10px;background:#ffffff20;color:white">×</button></div><div style="display:flex;gap:12px;align-items:center;margin:18px 0"><div id="ns-profile-avatar" style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#f04b9f,#8064ff);display:grid;place-items:center;font-size:23px;font-weight:900">P</div><div><strong id="ns-profile-name">Player</strong><div id="ns-profile-email" style="font-size:11px;color:#b8d9f2;margin-top:4px"></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px"><label>DISPLAY NAME<input id="ns-edit-name" maxlength="24" style="display:block;width:100%;margin-top:6px;padding:9px;border-radius:8px;background:#071326;color:white;border:1px solid #ffffff35"></label><label>LEVEL<input id="ns-edit-level" type="number" min="1" max="9999" style="display:block;width:100%;margin-top:6px;padding:9px;border-radius:8px;background:#071326;color:white;border:1px solid #ffffff35"></label><label style="grid-column:1/-1">RANK<input id="ns-edit-rank" maxlength="32" style="display:block;width:100%;margin-top:6px;padding:9px;border-radius:8px;background:#071326;color:white;border:1px solid #ffffff35"></label></div><div style="font-size:10px;color:#a9d6ef;margin:8px 0">PLAYER ID <span id="ns-profile-id"></span></div><div id="ns-save-status" style="font-size:11px;color:#8fe9c3;margin:10px 0">Cloud save ready</div><button id="ns-profile-save" style="width:100%;padding:12px;border:0;border-radius:10px;background:linear-gradient(90deg,#f04b9f,#8064ff);color:white;font-weight:900">SAVE PROFILE</button><button id="ns-profile-logout" style="width:100%;padding:10px;margin-top:8px;border:1px solid #ffffff30;border-radius:10px;background:#ffffff10;color:white">LOG OUT</button><div style="font-size:10px;color:#8ea9c0;line-height:1.5;margin-top:10px">Progress is linked to this account and can be restored after logging in on another device.</div>';
+ panel.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><b style="letter-spacing:.12em">PLAYER PROFILE</b><button id="ns-profile-close" style="border:0;border-radius:50%;padding:5px 10px;background:#ffffff20;color:white">×</button></div><div style="display:flex;gap:12px;align-items:center;margin:18px 0"><div id="ns-profile-avatar" style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#f04b9f,#8064ff);display:grid;place-items:center;font-size:23px;font-weight:900">P</div><div><strong id="ns-profile-name">Player</strong><div id="ns-profile-email" style="font-size:11px;color:#b8d9f2;margin-top:4px"></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px"><label>DISPLAY NAME<input id="ns-edit-name" maxlength="24" style="display:block;width:100%;margin-top:6px;padding:9px;border-radius:8px;background:#071326;color:white;border:1px solid #ffffff35"></label><label>LEVEL<input id="ns-edit-level" type="number" min="1" max="9999" style="display:block;width:100%;margin-top:6px;padding:9px;border-radius:8px;background:#071326;color:white;border:1px solid #ffffff35"></label><label style="grid-column:1/-1">RANK<select id="ns-edit-rank" style="display:block;width:100%;margin-top:6px;padding:9px;border-radius:8px;background:#071326;color:white;border:1px solid #ffffff35"><option>Unranked</option><option>Bronze</option><option>Silver</option><option>Gold</option><option>Platinum</option><option>Diamond</option><option>Master</option><option>Grandmaster</option><option>Mythical</option></select></label></div><div id="ns-progression-card" style="margin-top:16px;padding:13px;border-radius:13px;background:linear-gradient(120deg,#172e50,#30224c);border:1px solid #9fdcff45"><div style="display:flex;justify-content:space-between;gap:8px;font-size:11px"><b>PLAYER PROGRESSION</b><b id="ns-xp-label">0 / 100 XP</b></div><div style="height:8px;background:#ffffff20;border-radius:20px;overflow:hidden;margin:9px 0"><div id="ns-xp-fill" style="height:100%;width:0%;background:linear-gradient(90deg,#5fe1f3,#b48aff,#ff83c4);border-radius:20px"></div></div><div id="ns-map-unlocks" style="font-size:10px;color:#c4ddf3;line-height:1.6">Next kingdom unlock: Frostfall at level 16</div></div><div style="font-size:10px;color:#a9d6ef;margin:8px 0">PLAYER ID <span id="ns-profile-id"></span></div><div id="ns-save-status" style="font-size:11px;color:#8fe9c3;margin:10px 0">Cloud save ready</div><button id="ns-profile-save" style="width:100%;padding:12px;border:0;border-radius:10px;background:linear-gradient(90deg,#f04b9f,#8064ff);color:white;font-weight:900">SAVE PROFILE</button><button id="ns-profile-logout" style="width:100%;padding:10px;margin-top:8px;border:1px solid #ffffff30;border-radius:10px;background:#ffffff10;color:white">LOG OUT</button><div style="font-size:10px;color:#8ea9c0;line-height:1.5;margin-top:10px">Progress is linked to this account and can be restored after logging in on another device.</div>';
  world.appendChild(panel);
  const open=()=>{panel.style.display=panel.style.display==='block'?'none':'block';};
  button.addEventListener('click',open);
  panel.querySelector('#ns-profile-close').addEventListener('click',()=>panel.style.display='none');
  panel.querySelector('#ns-profile-save').addEventListener('click',async()=>{
-  playerProfile={...playerProfile,username:panel.querySelector('#ns-edit-name').value.trim()||'Adventurer',level:Math.max(1,Number(panel.querySelector('#ns-edit-level').value)||1),rank:panel.querySelector('#ns-edit-rank').value.trim()||'Unranked',updated_at:new Date().toISOString()};
-  try{await supabase.from('player_profiles').upsert({id:player.id,...playerProfile});renderProfile();setSaveStatus('Profile saved to cloud');}catch(e){setSaveStatus('Save failed: '+e.message);}
+  const name=panel.querySelector('#ns-edit-name').value.trim();
+  const level=Number(panel.querySelector('#ns-edit-level').value);
+  const rank=panel.querySelector('#ns-edit-rank').value;
+  if(name.length<2||name.length>24){setSaveStatus('Name must be 2–24 characters');return;}
+  if(!Number.isInteger(level)||level<1||level>100){setSaveStatus('Level must be between 1 and 100');return;}
+  try{await window.NOT_SAVED_PROFILE.update({username:name,level,rank});setSaveStatus('Profile saved to cloud');}
+  catch(e){setSaveStatus('Save failed: '+(e.message||'Check your connection'));console.error(e);}
  });
  panel.querySelector('#ns-profile-logout').addEventListener('click',async()=>{await supabase.auth.signOut();location.reload();});
  renderProfile();
@@ -292,6 +297,12 @@ function addProfilePanel(){
 function renderProfile(){
  const panel=document.getElementById('ns-profile-panel');if(!panel||!player)return;
  const name=playerProfile?.username||player.user_metadata?.username||player.email?.split('@')[0]||'Adventurer';
+ const level=Math.max(1,Number(playerProfile?.level)||1),rank=playerProfile?.rank||'Unranked';
+ const xp=Math.max(0,Number(gameSave?.world?.progression?.xp)||0),need=100+(level-1)*25;
+ const pct=Math.min(100,Math.round(xp/need*100));
+ const xpLabel=panel.querySelector('#ns-xp-label'),xpFill=panel.querySelector('#ns-xp-fill'),unlock=panel.querySelector('#ns-map-unlocks');
+ if(xpLabel)xpLabel.textContent=xp+' / '+need+' XP';if(xpFill)xpFill.style.width=pct+'%';
+ if(unlock){const next=[['Frostfall Kingdom',16],['Infernal Dominion',31],['Verdant Realm',51],['Celestial Empire',76]].find(x=>level<x[1]);unlock.textContent=next?'Next kingdom unlock: '+next[0]+' at level '+next[1]:'All five kingdoms unlocked · Maximum level reached';}
  panel.querySelector('#ns-profile-name').textContent=name;
  panel.querySelector('#ns-profile-email').textContent=player.email||'';
  panel.querySelector('#ns-profile-avatar').textContent=name.slice(0,1).toUpperCase();
@@ -309,6 +320,36 @@ async function persistSave(){
  setSaveStatus('Cloud saved · '+new Date(payload.updated_at).toLocaleTimeString());
  return true;
 }
+window.NOT_SAVED_PROFILE={
+ get:()=>clone(playerProfile),
+ update:async(patch)=>{
+  if(!player||!supabase)throw new Error('Sign in before editing your profile.');
+  const next={...playerProfile};
+  if(patch.username!==undefined)next.username=String(patch.username).trim().slice(0,24);
+  if(patch.level!==undefined)next.level=Math.min(100,Math.max(1,Math.trunc(Number(patch.level)||1)));
+  if(patch.rank!==undefined)next.rank=String(patch.rank).trim().slice(0,32)||'Unranked';
+  next.updated_at=new Date().toISOString();
+  const {error}=await supabase.from('player_profiles').upsert({id:player.id,...next});
+  if(error)throw error;
+  playerProfile=next;renderProfile();
+  document.dispatchEvent(new CustomEvent('ns-profile-updated',{detail:clone(playerProfile)}));
+  return clone(playerProfile);
+ },
+ xpForNextLevel:level=>100+(Math.max(1,Number(level)||1)-1)*25,
+ addXP:async(amount)=>{
+  if(!player)throw new Error('Sign in before earning XP.');
+  const gain=Math.max(0,Math.floor(Number(amount)||0));if(!gain)return {level:playerProfile.level,xp:gameSave.world?.progression?.xp||0};
+  gameSave.world=gameSave.world||{};
+  const progression=gameSave.world.progression||{xp:0,totalXp:0};
+  progression.xp=Math.max(0,Number(progression.xp)||0)+gain;progression.totalXp=Math.max(0,Number(progression.totalXp)||0)+gain;
+  let level=Math.max(1,Number(playerProfile.level)||1);
+  while(level<100&&progression.xp>=this.xpForNextLevel(level)){progression.xp-=this.xpForNextLevel(level);level++;}
+  gameSave.world.progression=progression;
+  if(level!==playerProfile.level)await this.update({level});
+  await window.NOT_SAVED_SAVE.saveNow();renderProfile();
+  return {level,xp:progression.xp,totalXp:progression.totalXp};
+ }
+};
 window.NOT_SAVED_SAVE={
  get:()=>clone(gameSave),
  set:async(next)=>{gameSave={...defaultSave(),...clone(next)};return persistSave();},
