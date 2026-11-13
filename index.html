@@ -239,10 +239,10 @@ body{position:fixed;inset:0;width:100%;height:100dvh;min-height:0;padding:env(sa
   document.getElementById('closeModal').addEventListener('click',close);
   modal.addEventListener('click',e=>{if(e.target===modal)close();});
   addEventListener('keydown',e=>{if(e.key==='Escape')close();});
-  form.addEventListener('submit',e=>{e.preventDefault();message.textContent='UI demo only — connect your game authentication service to create or access accounts.';});
+  form.addEventListener('submit',e=>{e.preventDefault();const playerName=String(new FormData(form).get('username')||'Adventurer').trim()||'Adventurer';if(typeof window.NSStartWorld==='function'){close();window.NSStartWorld(playerName);}else{message.textContent='The world is still loading. Please try again in a moment.';}});
   document.querySelectorAll('.social').forEach(btn=>btn.addEventListener('click',()=>{message.textContent='Connect an OAuth provider to enable social sign-in.';open('login');message.textContent='Social sign-in needs a connected provider.';}));
 })();
 </script>
-<script src="./world-hub.js"></script>
+<script src="./world-hub.js?v=3"></script>
 </body>
 </html>
