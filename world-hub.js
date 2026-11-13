@@ -25,4 +25,70 @@ $('ns-close').onclick=()=>$('ns-location').classList.remove('open');$('ns-enter'
 $('ns-settings').onclick=()=>$('ns-settings-panel').classList.toggle('open');$('ns-sound').onclick=()=>{music=!music;$('ns-sound').textContent=music?'♫ ON':'♫ OFF';if(music)sound(520)};$('ns-music').onchange=e=>{music=e.target.checked;$('ns-sound').textContent=music?'♫ ON':'♫ OFF'};$('ns-sfx').onchange=e=>sfx=e.target.checked;$('ns-effects').onchange=e=>root.querySelector('.sky').style.display=e.target.checked?'block':'none';
 root.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{sound(430);alert(b.dataset.nav+' screen is ready to connect to the game systems.')});
 
+
+ // Real-time 3D PBR world layer. "4D" is not a standard model format;
+ // this uses actual 3D geometry, physically-based materials and animated time-based effects.
+ const mapEl=root.querySelector('.map'), oldMap=mapEl.querySelector('svg');
+ oldMap.style.display='none';
+ const stage=document.createElement('div');stage.id='ns-pbr-stage';
+ stage.style.cssText='position:absolute;inset:0;overflow:hidden;touch-action:pan-y';
+ mapEl.appendChild(stage);
+ const zoneNames=[['frozen','FROZEN KINGDOM'],['emerald','EMERALD KINGDOM'],['golden','GOLDEN KINGDOM'],['volcanic','VOLCANIC KINGDOM'],['mystic','MYSTIC ISLANDS']];
+ const zoneColors={frozen:0x9bdcf5,emerald:0x55a85d,golden:0xc58b4d,volcanic:0x663d3c,mystic:0x9274d5};
+ function bootPBR(){
+  if(stage.dataset.ready)return;stage.dataset.ready='1';
+  import('https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js').then(async THREE=>{
+   const scene=new THREE.Scene();scene.background=new THREE.Color(0x071a36);scene.fog=new THREE.FogExp2(0x183d63,.012);
+   const camera=new THREE.PerspectiveCamera(38,1,.1,300);camera.position.set(0,20,43);camera.lookAt(0,2,0);
+   const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
+   renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+   renderer.outputColorSpace=THREE.SRGBColorSpace;stage.appendChild(renderer.domElement);
+   renderer.domElement.style.cssText='width:100%;height:100%;display:block';
+   scene.add(new THREE.HemisphereLight(0xc8e9ff,0x253044,2.0));
+   const sun=new THREE.DirectionalLight(0xffe5c2,4.2);sun.position.set(-12,24,15);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-35;sun.shadow.camera.right=35;sun.shadow.camera.top=35;sun.shadow.camera.bottom=-35;scene.add(sun);
+   const fill=new THREE.PointLight(0x66baff,65,90);fill.position.set(12,10,-10);scene.add(fill);
+   const ground=new THREE.Mesh(new THREE.CircleGeometry(100,96),new THREE.MeshStandardMaterial({color:0x123c63,roughness:.34,metalness:.22}));ground.rotation.x=-Math.PI/2;ground.position.y=-2.8;ground.receiveShadow=true;scene.add(ground);
+   const mat=(color,rough=.78,metal=0,extra={})=>new THREE.MeshPhysicalMaterial({color,roughness:rough,metalness:metal,clearcoat:.18,clearcoatRoughness:.35,...extra});
+   const stone=mat(0x9ca8ae,.88,.12),darkStone=mat(0x53616d,.82,.18),gold=mat(0xc89b51,.28,.78),roof=mat(0x344a63,.42,.42),glow=mat(0xffb94f,.22,.1,{emissive:0xff8a27,emissiveIntensity:2.4});
+   function box(parent,w,h,d,m,x,y,z){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y+h/2,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o}
+   function tower(parent,x,z,r,h,m,roofMat){const shaft=new THREE.Mesh(new THREE.CylinderGeometry(r*.82,r,h,12),m);shaft.position.set(x,yBase+h/2,z);shaft.castShadow=true;shaft.receiveShadow=true;parent.add(shaft);const cap=new THREE.Mesh(new THREE.ConeGeometry(r*1.35,h*.42,12),roofMat);cap.position.set(x,yBase+h+h*.21,z);cap.castShadow=true;parent.add(cap);const win=new THREE.Mesh(new THREE.SphereGeometry(r*.17,10,8),glow);win.scale.set(1,.7,.35);win.position.set(x,yBase+h*.58,z+r*.88);parent.add(win)}
+   const islands=[];
+   zoneNames.forEach(([id,label],i)=>{
+    const a=i*Math.PI*2/5-Math.PI/2,rad=13,x=Math.cos(a)*rad,z=Math.sin(a)*rad;
+    const group=new THREE.Group();group.position.set(x,0,z);scene.add(group);islands.push({id,label,group});
+    const landMat=mat(zoneColors[id],.9,.02);const land=new THREE.Mesh(new THREE.SphereGeometry(5.2,48,32),landMat);land.scale.set(1.35,.27,1);land.position.y=-.35;land.castShadow=true;land.receiveShadow=true;group.add(land);
+    const cliff=new THREE.Mesh(new THREE.CylinderGeometry(5.6,4.1,1.65,48,1),mat(id==='volcanic'?0x302b35:0x5a6269,.96));cliff.position.y=-1.12;cliff.castShadow=true;cliff.receiveShadow=true;group.add(cliff);
+    const yBase=.05;
+    const keep=box(group,2.9,3.6,2.6,stone,0,yBase,0);
+    box(group,3.7,.45,3.3,darkStone,-.4,yBase+3.45,0);
+    // Curtain walls and battlements create a recognizable multi-tower fortress.
+    box(group,5.5,1.35,.38,stone,0,yBase+.25,1.7);box(group,5.5,1.35,.38,stone,0,yBase+.25,-1.7);
+    box(group,.38,1.35,3.2,stone,2.55,yBase+.25,0);box(group,.38,1.35,3.2,stone,-2.55,yBase+.25,0);
+    tower(group,-2.55,1.7,.62,3.5,stone,roof);tower(group,2.55,1.7,.62,4.1,stone,roof);tower(group,-2.55,-1.7,.62,3.8,stone,roof);tower(group,2.55,-1.7,.62,4.6,stone,roof);
+    const door=new THREE.Mesh(new THREE.BoxGeometry(.72,1.5,.12),mat(0x252d38,.45,.4));door.position.set(0,yBase+.8,1.36);group.add(door);
+    for(let k=0;k<5;k++){const slit=new THREE.Mesh(new THREE.BoxGeometry(.12,.55,.08),glow);slit.position.set(-.85+k*.42,yBase+2.2,1.34);group.add(slit)}
+    // Small PBR props make every island distinct without flat SVG artwork.
+    for(let k=0;k<8;k++){const p=new THREE.Mesh(new THREE.ConeGeometry(.38,1.4,7),mat(id==='frozen'?0xdaf6ff:id==='volcanic'?0x33252b:id==='golden'?0x80603a:0x315d42,.95));const ang=k*Math.PI/4;p.position.set(Math.cos(ang)*4.5,.05,Math.sin(ang)*3.4);p.castShadow=true;group.add(p)}
+    if(id==='volcanic'){const lava=new THREE.Mesh(new THREE.TorusGeometry(1.1,.12,8,40),mat(0xff5b18,.22,.05,{emissive:0xff3900,emissiveIntensity:3}));lava.rotation.x=Math.PI/2;lava.position.set(-1.6,.35,-2.5);group.add(lava)}
+    if(id==='frozen'){const ice=mat(0xd8f6ff,.12,.25,{transmission:.22,thickness:.6});const spire=new THREE.Mesh(new THREE.ConeGeometry(.75,3.2,6),ice);spire.position.set(0,1.2,-3);spire.castShadow=true;group.add(spire)}
+    if(id==='mystic'){const orb=new THREE.Mesh(new THREE.IcosahedronGeometry(.7,2),mat(0x9e7aff,.16,.25,{emissive:0x633bff,emissiveIntensity:1.7}));orb.position.set(0,5,0);group.add(orb)}
+    const hit=new THREE.Mesh(new THREE.CylinderGeometry(5.4,5.4,4,32),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.y=.2;group.add(hit);hit.userData.zone=id;
+    hit.userData.pick=true;
+   });
+   // Animated volumetric-looking cloud banks and drifting motes.
+   const cloudMat=new THREE.MeshPhysicalMaterial({color:0xc8e7ff,transparent:true,opacity:.16,roughness:1,depthWrite:false});
+   const clouds=[];for(let i=0;i<18;i++){const c=new THREE.Mesh(new THREE.SphereGeometry(1,16,12),cloudMat);c.scale.set(2+Math.random()*3,.28+Math.random()*.35,1.2);c.position.set((Math.random()-.5)*52,5+Math.random()*8,(Math.random()-.5)*42);scene.add(c);clouds.push(c)}
+   const dustGeo=new THREE.BufferGeometry(),dustN=550,dustPos=new Float32Array(dustN*3);for(let i=0;i<dustN;i++){dustPos[i*3]=(Math.random()-.5)*55;dustPos[i*3+1]=Math.random()*14;dustPos[i*3+2]=(Math.random()-.5)*48}dustGeo.setAttribute('position',new THREE.BufferAttribute(dustPos,3));const dust=new THREE.Points(dustGeo,new THREE.PointsMaterial({color:0xc8eaff,size:.075,transparent:true,opacity:.72}));scene.add(dust);
+   const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let hovered=null;
+   renderer.domElement.addEventListener('pointermove',e=>{const r=renderer.domElement.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height*2-1));ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(scene.children.flatMap(o=>o.children||[]).filter(o=>o.userData.pick),false)[0];if(hit&&hovered!==hit.object){hovered=hit.object;renderer.domElement.style.cursor='pointer'}else if(!hit){hovered=null;renderer.domElement.style.cursor='default'}});
+   renderer.domElement.addEventListener('click',()=>{if(hovered){zone=hovered.userData.zone;$('ns-zone-title').textContent=zones[zone][0];$('ns-zone-copy').textContent=zones[zone][1];$('ns-location').classList.add('open');sound(620)}});
+   const resize=()=>{const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)};new ResizeObserver(resize).observe(stage);resize();
+   let t0=performance.now();function frame(now){if(!root.classList.contains('active')||!stage.isConnected){requestAnimationFrame(frame);return}const t=(now-t0)*.001;islands.forEach((o,i)=>{o.group.position.y=Math.sin(t*.65+i)*.13;o.group.rotation.y=Math.sin(t*.18+i)*.025});clouds.forEach((c,i)=>{c.position.x+=.003+(i%3)*.001;if(c.position.x>30)c.position.x=-30});dust.rotation.y=t*.012;renderer.render(scene,camera);requestAnimationFrame(frame)}requestAnimationFrame(frame);
+  }).catch(err=>{console.warn('3D PBR renderer unavailable; showing map fallback',err);oldMap.style.display='block';stage.remove()});
+ }
+ const previousStart=start;
+ start=function(name){previousStart(name);setTimeout(bootPBR,2500)};
+ window.NSStartWorld=start;
+
 })();
