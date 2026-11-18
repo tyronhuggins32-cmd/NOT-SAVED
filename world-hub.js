@@ -47,10 +47,10 @@
 #ns-world .ns-char-art .ns-art-ring:before{left:8%;top:20%}#ns-world .ns-char-art .ns-art-ring:after{right:5%;bottom:18%}
 #ns-world .ns-char-art .ns-art-sweep{position:absolute;z-index:0;inset:-40% -60%;background:linear-gradient(110deg,transparent 43%,color-mix(in srgb,var(--element-glow) 35%,transparent) 50%,transparent 57%);transform:translateX(-55%) rotate(12deg);animation:ns-art-sweep 6.5s ease-in-out infinite}
 #ns-world .ns-char-art .ns-art-particle{position:absolute;z-index:1;width:5px;height:5px;border-radius:50%;background:var(--element-glow);box-shadow:0 0 10px 3px var(--element-glow);opacity:0;animation:ns-particle-rise var(--duration,4s) ease-in-out infinite;animation-delay:var(--delay,0s)}
-#ns-world .ns-char-art .ns-art-particle:nth-of-type(4){left:18%;bottom:12%;--duration:4.2s;--delay:-1.1s}
-#ns-world .ns-char-art .ns-art-particle:nth-of-type(5){left:78%;bottom:18%;--duration:5.3s;--delay:-2.8s}
-#ns-world .ns-char-art .ns-art-particle:nth-of-type(6){left:28%;bottom:34%;--duration:3.7s;--delay:-.6s}
-#ns-world .ns-char-art .ns-art-particle:nth-of-type(7){left:72%;bottom:38%;--duration:4.8s;--delay:-3.2s}
+#ns-world .ns-char-art .ns-art-particle:nth-of-type(1){left:18%;bottom:12%;--duration:4.2s;--delay:-1.1s}
+#ns-world .ns-char-art .ns-art-particle:nth-of-type(2){left:78%;bottom:18%;--duration:5.3s;--delay:-2.8s}
+#ns-world .ns-char-art .ns-art-particle:nth-of-type(3){left:28%;bottom:34%;--duration:3.7s;--delay:-.6s}
+#ns-world .ns-char-art .ns-art-particle:nth-of-type(4){left:72%;bottom:38%;--duration:4.8s;--delay:-3.2s}
 #ns-world .ns-char-art>svg{position:relative;z-index:2;width:100%;height:100%;object-fit:contain;transform:scale(1.08) translateY(5px);filter:drop-shadow(0 5px 0 #081426) drop-shadow(0 12px 12px #0008);animation:ns-hero-float 4.8s ease-in-out infinite}
 #ns-world .ns-char-art:after{z-index:3;pointer-events:none;background:linear-gradient(145deg,#ffffff12,transparent 42%,#0003)}
 @keyframes ns-aura-pulse{0%,100%{transform:scale(.88);opacity:.28}50%{transform:scale(1.13);opacity:.62}}
